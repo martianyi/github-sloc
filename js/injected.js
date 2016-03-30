@@ -3,17 +3,21 @@ var github_token = "";
 
 function load() {
     chrome.storage.sync.get('github_token', function (result) {
-        if (result.github_token != "null") github_token = result.github_token;
+        let repo = $('.entry-title.public [itemprop="name"] a').attr('href');
+        if (result.github_token && result.github_token != "null") github_token = result.github_token;
         if (document.location.pathname === '/search') {
-            insertSloc();
+            insertSlocWhenSearch();
+        }
+        else if (repo) {
+            insertSlocForOne(repo);
         }
     })
 }
 
-function insertSloc() {
+function insertSlocWhenSearch() {
     "use strict";
 
-    var tasks = [];
+    let tasks = [];
 
     $('.repo-list-name a').each(function () {
         let self = this;
@@ -26,6 +30,15 @@ function insertSloc() {
 
     return Promise.all(tasks);
 
+}
+
+function insertSlocForOne(repo) {
+    "use strict";
+    let repoMeta = $('.repository-meta-content');
+
+    return getSloc(repo.substring(1), 5)
+        .then(lines => repoMeta.prepend("Total sloc is " + lines + ". "))
+        .catch(e=>console.error(e));
 }
 
 function getSloc(repo, tries) {
@@ -41,7 +54,11 @@ function getSloc(repo, tries) {
         return Promise.reject("Too many tries");
     }
 
-    var url = "https://api.github.com/repos/" + repo + "/stats/code_frequency?access_token=" + github_token;
+    let url = "https://api.github.com/repos/" + repo + "/stats/code_frequency";
+
+    if (github_token.length !== 0) {
+        url += "?access_token=" + github_token;
+    }
 
     return fetch(url)
         .then(x=>x.json())
@@ -49,4 +66,4 @@ function getSloc(repo, tries) {
         .catch(err => getSloc(repo, tries - 1));
 }
 
-load();
+window.onload = load;

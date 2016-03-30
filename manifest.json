@@ -16,10 +16,14 @@
       ],
       "js": [
         "js/jquery.min.js",
-        "js/main.js"
+        "js/injected.js"
       ]
     }
   ],
+  "background": {
+    "scripts": [ "js/background.js" ],
+    "persistent": false
+  },
   "permissions": [
     "storage",
     "https://api.github.com/repos/*"

@@ -1,6 +1,6 @@
 var github_token = "";
 chrome.storage.sync.get('github_token', function (result) {
-    if (result.github_token != "null") github_token = result.github_token;
+    if (result.github_token && result.github_token != "null") github_token = result.github_token;
     document.getElementById('github_token').value = github_token;
     document.getElementById('save').onclick = function () {
         if (!document.getElementById('github_token').value) {
