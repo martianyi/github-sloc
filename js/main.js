@@ -23,13 +23,17 @@ function insertSloc() {
             .catch(e=>console.error(e));
         return tasks.push(task);
     });
-    
+
     return Promise.all(tasks);
 
 }
 
 function getSloc(repo, tries) {
     "use strict";
+
+    if (repo.length === 0) {
+        return Promise.reject("No repo provided");
+    }
 
     //Github's API returns an empty object the first time it is accessed
     //We try five times then stop
@@ -45,4 +49,4 @@ function getSloc(repo, tries) {
         .catch(err => getSloc(repo, tries - 1));
 }
 
-window.onload = load();
+load();
