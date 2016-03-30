@@ -1,29 +1,27 @@
 {
-    "manifest_version": 2,
-    "name": "Github Sloc",
-    "version": "1.0",
-    "description": "View sloc on Github search results page",
-    "icons": {
-        "16": "images/icon16.png",
-        "48": "images/icon48.png",
-        "128": "images/icon128.png"
-    },
-    "browser_action": {
-        "default_icon": {
-            "19": "images/icon19.png",
-            "38": "images/icon38.png"
-        },
-        "default_title": "Github Sloc",
-        "default_popup": "popup.html"
-    },
-    "options_page": "options.html",
-    "background": {
-        "scripts": [
-            "js/main.js"
-        ]
-    },
-    "permissions": [
-        "https://github.com/*search?utf8=%E2%9C%93&q=*",
-        "https://api.github.com/repos/*"
-    ]
+  "manifest_version": 2,
+  "name": "Github Sloc",
+  "version": "0.1.0",
+  "description": "View sloc on Github search results page",
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "*://github.com/*"
+      ],
+      "js": [
+        "js/jquery.min.js",
+        "js/main.js"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "https://api.github.com/repos/*"
+  ]
 }
