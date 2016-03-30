@@ -66,4 +66,4 @@ function getSloc(repo, tries) {
         .catch(err => getSloc(repo, tries - 1));
 }
 
-window.onload = load;
+load();
