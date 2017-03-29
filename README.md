@@ -1,10 +1,12 @@
-# GitHub Sloc
+# GitHub SLOC
 
-An Chrome extension to view sloc on GitHub search results and project detail page.
+An Chrome extension to view SLOC on GitHub search results and project detail page.
 
 ![snapshots](images/snapshots/snapshot.png)
 
 ![snapshots](images/snapshots/snapshot2.png)
+
+![snapshots](images/snapshots/snapshot3.png)
 
 # Usage
 
