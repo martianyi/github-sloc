@@ -19,7 +19,7 @@ function insertSloc() {
         const $sloc = $('.github-sloc');
         getSloc(location.pathname, 5)
             .then(lines => $sloc.text("SLOC: " + lines))
-            .catch(e => $sloc.text("Error when counting SLOC", e.toString()));
+            .catch(e => $sloc.text("Error when counting SLOC" + e.toString()));
     }
 }
 
@@ -27,7 +27,7 @@ function insertSlocWhenSearch() {
     if (location.pathname === '/search') {
         $('.repo-list h3 a').each(function () {
             getSloc($(this).attr('href'), 5)
-                .then(lines => $(this).parent().next('p').text($(this).parent().next('p').text() + "(SLOC:" + lines +")"))
+                .then(lines => $(this).parent().next('p').text($(this).parent().next('p').text() + "(SLOC:" + lines + ")"))
                 .catch(e => console.log(e));
         });
     }
