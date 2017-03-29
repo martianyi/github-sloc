@@ -35,7 +35,7 @@ function insertSlocWhenSearch() {
 
 function getSloc(repo, tries) {
 
-    if (repo.length === 0) {
+    if (!repo) {
         return Promise.reject(new Error("No repo provided"));
     }
 
