@@ -5,11 +5,20 @@
     <title>Set personal access token</title>
 </head>
 <body>
-<h1>GithubSloc Options</h1>
-<h3>Personal access token <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">what's this?</a></h3>
-<input type="text" id="github_token" placeholder="personal access token" />
-<input type="button" id="save" value="Save" />
-<a href="https://github.com/settings/tokens/new" target="_blank">generate one</a>
+<h1>GitHub Sloc Options</h1>
+<h3>Set personal access token</h3>
+<div>
+    <p>GitHub Sloc uses GitHub API to retrieve repository sloc. By default it makes unauthenticated requests to the
+        GitHub
+        API, set personal access token if you want to:</p>
+    <ul>
+        <li>Access a private repository</li>
+        <li>Get rid of the rate limit of unauthenticated requests</li>
+    </ul>
+</div>
+<input type="text" id="github_token" placeholder="personal access token"/>
+<input type="button" id="save" value="Save"/>
+<a href="https://github.com/settings/tokens/new" target="_blank">create one</a>
 <script src="js/options.js"></script>
 </body>
 </html>

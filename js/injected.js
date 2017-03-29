@@ -1,5 +1,6 @@
 "use strict";
-var github_token = "";
+
+var github_token;
 
 chrome.storage.sync.get('github_token', function (result) {
     github_token = result.github_token;
@@ -38,13 +39,13 @@ function getSloc(repo, tries) {
         return Promise.reject("No repo provided");
     }
 
-    //Github's API returns an empty object the first time it is accessed
+    //GitHub's API returns an empty object the first time it is accessed
     //We try five times then stop
     if (tries === 0) {
         return Promise.reject("Too many tries");
     }
 
-    let url = "https://api.github.com/repos" + repo + "/stats/code_frequency";
+    let url = "https://api.GitHub.com/repos" + repo + "/stats/code_frequency";
 
     if (github_token != null) {
         url += "?access_token=" + github_token;

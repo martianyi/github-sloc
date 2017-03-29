@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Github Sloc",
-  "version": "1.0.0",
-  "description": "View sloc on Github search results page",
+  "name": "GitHub Sloc",
+  "version": "1.0.1",
+  "description": "View sloc on GitHub search results and project detail page",
   "icons": {
     "16": "images/icons/icon16.png",
     "48": "images/icons/icon48.png",
