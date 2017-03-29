@@ -1,58 +1,38 @@
 "use strict";
 var github_token = "";
 
-load(); //init
-
-function load() {
-    if (github_token.length !== 0) {
-        return start();
-    }
-    chrome.storage.sync.get('github_token', function (result) {
-        if (result.github_token && result.github_token != "null") github_token = result.github_token;
-        start();
-    })
-}
-
-function start() {
-    let repo = $('.entry-title.public [itemprop="name"] a').attr('href');
-    let repoMeta = $('.repository-meta-content');
-
-    if (document.location.pathname === '/search') {
+chrome.storage.sync.get('github_token', function (result) {
+    github_token = result.github_token;
+    insertSloc();
+    insertSlocWhenSearch();
+    $(document).on('pjax:complete', function () {
+        insertSloc();
         insertSlocWhenSearch();
-    }
-    else if (repo && repoMeta) {
-        insertSlocForOne(repo, repoMeta);
-    }
-}
+    });
+});
 
 function insertSlocWhenSearch() {
-    "use strict";
-
-    let tasks = [];
-
-    $('.repo-list-name a').each(function () {
-        let self = this;
-        let repoListMeta = $(self).parent().siblings(".repo-list-meta");
-        let task = getSloc($(self).text(), 5)
-            .then(lines => repoListMeta.append(". Total sloc is " + lines))
-            .catch(e=>console.error(e));
-        return tasks.push(task);
-    });
-
-    return Promise.all(tasks);
-
+    if (location.pathname === '/search') {
+        $('.repo-list h3 a').each(function () {
+            getSloc($(this).attr('href'), 5)
+                .then(lines => $(this).parent().next('p').text($(this).parent().next('p').text() + "SLOC:" + lines))
+                .catch(e => console.error(e));
+        });
+    }
 }
 
-function insertSlocForOne(repo, repoMeta) {
-    "use strict";
-
-    return getSloc(repo.substring(1), 5)
-        .then(lines => repoMeta.prepend("Total sloc is " + lines + ". "))
-        .catch(e=>console.error(e));
+function insertSloc() {
+    const repoMeta = $('.repository-meta-content');
+    if (repoMeta.length != 0) {
+        repoMeta.append('\n<span class="sloc">Counting SLOC...</span>');
+        const repo = location.pathname;
+        getSloc(repo, 5)
+            .then(lines => $('.sloc').text("SLOC: " + lines))
+            .catch(e => console.error(e));
+    }
 }
 
 function getSloc(repo, tries) {
-    "use strict";
 
     if (repo.length === 0) {
         return Promise.reject("No repo provided");
@@ -64,15 +44,15 @@ function getSloc(repo, tries) {
         return Promise.reject("Too many tries");
     }
 
-    let url = "https://api.github.com/repos/" + repo + "/stats/code_frequency";
+    let url = "https://api.github.com/repos" + repo + "/stats/code_frequency";
 
-    if (github_token.length !== 0) {
+    if (github_token != null) {
         url += "?access_token=" + github_token;
     }
 
     return fetch(url)
-        .then(x=>x.json())
-        .then(x=>x.reduce((total, changes)=>total + changes[1] + changes[2], 0))
+        .then(x => x.json())
+        .then(x => x.reduce((total, changes) => total + changes[1] + changes[2], 0))
         .catch(err => getSloc(repo, tries - 1));
 }
 
