@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "GitHub SLOC",
-  "version": "1.0.3",
-  "description": "View SLOC on GitHub search results and project detail page",
+  "version": "1.0.4",
+  "description": "View SLOC on GitHub",
   "icons": {
     "16": "images/icons/icon16.png",
     "48": "images/icons/icon48.png",

@@ -5,10 +5,8 @@ var github_sloc_token;
 chrome.storage.sync.get('github_sloc_token', function (result) {
     if (result && result.github_sloc_token != null) github_sloc_token = result.github_sloc_token;
     insertSloc();
-    insertSlocWhenSearch();
     $(document).on('pjax:complete', function () {
         insertSloc();
-        insertSlocWhenSearch();
     });
 });
 
@@ -19,18 +17,13 @@ function insertSloc() {
         const $sloc = $('.github-sloc');
         getSloc(location.pathname, 5)
             .then(lines => $sloc.text("SLOC: " + lines))
-            .catch(e => $sloc.text("Error when counting SLOC" + e.toString()));
+            .catch(e => $sloc.text(e.toString()));
     }
-}
-
-function insertSlocWhenSearch() {
-    if (location.pathname === '/search') {
-        $('.repo-list h3 a').each(function () {
-            getSloc($(this).attr('href'), 5)
-                .then(lines => $(this).parent().next('p').text($(this).parent().next('p').text() + "(SLOC:" + lines + ")"))
-                .catch(e => console.log(e));
-        });
-    }
+    $('.repo-list h3 a').each(function () {
+        getSloc($(this).attr('href'), 5)
+            .then(lines => $(this).append("<span class='text-gray'>(" + lines + " sloc)</span>"))
+            .catch(e => console.log(e));
+    });
 }
 
 function getSloc(repo, tries) {
@@ -42,7 +35,7 @@ function getSloc(repo, tries) {
     //GitHub's API returns an empty object the first time it is accessed
     //We try five times then stop
     if (tries === 0) {
-        return Promise.reject(new Error("Too many tries"));
+        return Promise.reject(new Error("Too many requests to the GitHub API"));
     }
 
     let url = "https://api.github.com/repos" + repo + "/stats/code_frequency";

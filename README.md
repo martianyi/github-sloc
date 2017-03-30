@@ -1,6 +1,6 @@
 # GitHub SLOC
 
-An Chrome extension to view SLOC on GitHub search results and project detail page.
+An Chrome extension to view SLOC on GitHub.
 
 # Usage
 
@@ -10,11 +10,11 @@ Then go to options page set your personal access token there.
 
 # Snapshots
 
-![snapshots](images/snapshots/snapshot.png)
-
-![snapshots](images/snapshots/snapshot2.png)
-
-![snapshots](images/snapshots/snapshot3.png)
+![Snapshots](images/snapshots/snapshot.png)
+![Snapshots](images/snapshots/snapshot2.png)
+![Snapshots](images/snapshots/snapshot3.png)
+![Snapshots](images/snapshots/snapshot4.png)
+![Snapshots](images/snapshots/snapshot5.png)
 
 
 
