@@ -5,18 +5,17 @@
     <title>GitHub SLOC Options</title>
 </head>
 <body>
-<h1>GitHub SLOC Options</h1>
-<h3>Set personal access token</h3>
-<p>GitHub SLOC uses GitHub API to retrieve repository SLOC. By default it makes unauthenticated requests to the
+<h3>Personal access token</h3>
+<p>GitHub SLOC uses GitHub API to retrieve SLOC. By default it makes unauthenticated requests to the
     GitHub
     API, set personal access token if you want to</p>
 <ul>
     <li>Access a private repository</li>
-    <li>Get rid of the rate limit of unauthenticated requests</li>
+    <li>Bypass the rate limit of unauthenticated requests</li>
 </ul>
-<input type="text" id="github_sloc_token" placeholder="personal access token"/>
+<input type="text" id="github_sloc_token" placeholder="Personal access token"/>
 <input type="button" id="save" value="Save"/>
-<a href="https://github.com/settings/tokens/new" target="_blank">create one</a>
+<a href="https://github.com/settings/tokens/new?scopes=repo&description=GitHub%20SlOC" target="_blank">create one</a>
 <script src="js/options.js"></script>
 </body>
 </html>

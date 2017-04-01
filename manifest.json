@@ -1,12 +1,16 @@
 {
   "manifest_version": 2,
   "name": "GitHub SLOC",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "View SLOC on GitHub",
   "icons": {
     "16": "images/icons/icon16.png",
     "48": "images/icons/icon48.png",
     "128": "images/icons/icon128.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": true
   },
   "options_page": "options.html",
   "content_scripts": [

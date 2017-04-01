@@ -10,7 +10,6 @@ Then go to options page set your personal access token there.
 
 # Snapshots
 
-![Snapshots](images/snapshots/snapshot.png)
 ![Snapshots](images/snapshots/snapshot2.png)
 ![Snapshots](images/snapshots/snapshot3.png)
 ![Snapshots](images/snapshots/snapshot4.png)
