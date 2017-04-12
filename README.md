@@ -1,6 +1,13 @@
-# GitHub SLOC
+```
+          _ __  __          __            __          
+   ____ _(_) /_/ /_  __  __/ /_     _____/ /___  _____
+  / __ `/ / __/ __ \/ / / / __ \   / ___/ / __ \/ ___/
+ / /_/ / / /_/ / / / /_/ / /_/ /  (__  ) / /_/ / /__  
+ \__, /_/\__/_/ /_/\__,_/_.___/  /____/_/\____/\___/  
+/____/                                                
+```
 
-An Chrome extension to view SLOC on GitHub.
+GitHub SLOC is an Chrome extension to view the number of source line of codes of projects on GitHub.
 
 # Usage
 
