@@ -12,12 +12,12 @@ chrome.storage.sync.get('github_sloc_token', function (result) {
 
 function insertSloc() {
     const $repoMeta = $('.repository-meta-content');
-    if ($repoMeta.length != 0) {
-        $repoMeta.append('<span class="github-sloc">Counting SLOC...</span>');
+    if ($repoMeta.length !== 0) {
+        $repoMeta.append('<span class="github-sloc"></span>');
         const $sloc = $('.github-sloc');
         getSloc(location.pathname, 5)
             .then(lines => $sloc.text("SLOC: " + lines))
-            .catch(e => $sloc.text(e.toString()));
+            .catch(e => console.log(e));
     }
     $('.repo-list h3 a').each(function () {
         getSloc($(this).attr('href'), 5)
@@ -35,7 +35,7 @@ function getSloc(repo, tries) {
     //GitHub's API returns an empty object the first time it is accessed
     //We try five times then stop
     if (tries === 0) {
-        return Promise.reject(new Error("Too many requests to the GitHub API"));
+        return Promise.reject(new Error("Too many requests"));
     }
 
     let url = "https://api.github.com/repos" + repo + "/stats/code_frequency";
