@@ -19,11 +19,14 @@ function insertSloc() {
             .then(lines => $sloc.text("SLOC: " + lines))
             .catch(e => console.log(e));
     }
-    $('.repo-list h3 a').each(function () {
-        getSloc($(this).attr('href'), 5)
-            .then(lines => $(this).append("<span class='text-gray'>(" + lines + " sloc)</span>"))
-            .catch(e => console.log(e));
-    });
+    $('.repo-list h3 a').each(appendSloc);
+    $('#recommended-repositories-container').find('h3 a').each(appendSloc);
+}
+
+function appendSloc() {
+    getSloc($(this).attr('href'), 5)
+        .then(lines => $(this).append("<span class='text-gray'>(" + lines + " sloc)</span>"))
+        .catch(e => console.log(e));
 }
 
 function getSloc(repo, tries) {
