@@ -23,4 +23,3 @@ Then go to options page set your personal access token there.
 ![Snapshots](images/snapshots/snapshot5.png)
 
 
-
