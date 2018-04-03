@@ -1,3 +1,5 @@
+GitHub SLOC is an Chrome extension to view the number of source line of codes of projects on GitHub.
+
 ```
           _ __  __          __            __          
    ____ _(_) /_/ /_  __  __/ /_     _____/ /___  _____
@@ -7,12 +9,11 @@
 /____/                                                
 ```
 
-GitHub SLOC is an Chrome extension to view the number of source line of codes of projects on GitHub.
-
 # Usage
 
-Install from [Chrome web store](https://chrome.google.com/webstore/detail/github-sloc/fkjjjamhihnjmihibcmdnianbcbccpnn). Or clone this repo, go to chrome://extensions/ check developer mode, click load unpacked extension to load this extension.
+Install from [Chrome Web Store](https://chrome.google.com/webstore/detail/github-sloc/fkjjjamhihnjmihibcmdnianbcbccpnn). 
 
+Or clone this repo, go to chrome://extensions/ check developer mode, click load unpacked extension to load this extension. 
 Then go to options page set your personal access token there.
 
 # Snapshots
