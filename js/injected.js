@@ -8,18 +8,18 @@ var observeConf = {childList: true, subtree: true}
 
 chrome.storage.sync.get('github_sloc_token', function (result) {
   if (result && result.github_sloc_token != null) github_sloc_token = result.github_sloc_token
-  insertSloc()
-  $(document).on('pjax:complete', insertSloc)
+  $(document).on('pjax:complete', init)
+  init()
 })
 
-function insertSloc () {
+function init () {
 
   // Project detail page
   var $repoMeta = $('.repository-meta-content')
   if ($repoMeta.length !== 0) {
     $repoMeta.append('<span class="github-sloc"></span>')
-    getSloc(location.pathname, 3)
-      .then(lines => $repoMeta.append('<span class="github-sloc">SLOC: ' + lines + '</span>'))
+    getSLOC(location.pathname, 3)
+      .then(lines => $repoMeta.append('<span class="github-sloc">' + lines + ' sloc</span>'))
       .catch(e => console.log(e))
     return
   }
@@ -33,7 +33,7 @@ function insertSloc () {
         mutations.forEach(mutation => {
           mutation.addedNodes.forEach(node => {
             if (node.className === CLASS_NAME) {
-              $(node).find('h3 a').each(appendSloc)
+              $(node).find('h3 a').each(insertSLOC)
             }
           })
         })
@@ -42,7 +42,7 @@ function insertSloc () {
       observer.observe(targetNode, observeConf)
       discoverReposObserved = true
     }
-    $(targetNode).find('h3 a').each(appendSloc)
+    $(targetNode).find('h3 a').each(insertSLOC)
   }
 
   // Mini repo list
@@ -55,7 +55,7 @@ function insertSloc () {
         mutations.forEach(mutation => {
           mutation.addedNodes.forEach(node => {
             if (node.className === 'mini-repo-list') {
-              $(node).find(MINI_REPO_CLASS).each(appendSloc)
+              $(node).find(MINI_REPO_CLASS).each(insertSLOC)
             }
           })
         })
@@ -70,11 +70,11 @@ function insertSloc () {
       miniReposObserved = true
     }
   }
-  $(MINI_REPO_CLASS).each(appendSloc)
+  $(MINI_REPO_CLASS).each(insertSLOC)
 
   // Explore, Collections, Topics page
-  $('article h1 a').each(appendSloc)
-  $('article h3 a').each(appendSloc)
+  $('article h1 a').each(insertSLOC)
+  $('article h3 a').each(insertSLOC)
   if (!topicReposObserved) {
     var topicNode = document.querySelector('.container-lg.topic.p-responsive')
     if (topicNode) {
@@ -82,7 +82,7 @@ function insertSloc () {
         mutations.forEach(mutation => {
           mutation.addedNodes.forEach(node => {
             if (/article/i.test(node.tagName)) {
-              $(node).find('h3 a').each(appendSloc)
+              $(node).find('h3 a').each(insertSLOC)
             }
           })
         })
@@ -93,25 +93,25 @@ function insertSloc () {
     }
   }
 
-  // Search, Trending page, etc
-  $('.repo-list h3 a').each(appendSloc)
-  $('#user-repositories-list').find('h3 a').each(appendSloc)
+  // Search, Trending page
+  $('.repo-list h3 a').each(insertSLOC)
 
+  // etc
   var tab = getParameterByName('tab')
-  if (/\/repositories$/.test(location.pathname) || tab && tab === 'stars') {
-    $('h3 a').each(appendSloc)
+  if (/\/repositories$/.test(location.pathname) || ['stars', 'repositories'].includes(tab)) {
+    $('h3 a').each(insertSLOC)
   }
 }
 
-function appendSloc () {
+function insertSLOC () {
   var $el = $(this)
   if ($el.hasClass('has-sloc')) return
-  getSloc($el.attr('href'), 3)
+  getSLOC($el.attr('href'), 3)
     .then(lines => $el.addClass('has-sloc').append('<span class=\'text-gray\'>(' + lines + ' sloc)</span>'))
     .catch(e => console.log(e))
 }
 
-function getSloc (repo, tries) {
+function getSLOC (repo, tries) {
   if (!repo) {
     return Promise.reject(new Error('No repo provided'))
   }
@@ -126,7 +126,7 @@ function getSloc (repo, tries) {
   return fetch(url)
     .then(x => x.json())
     .then(x => x.reduce((total, changes) => total + changes[1] + changes[2], 0))
-    .catch(err => getSloc(repo, tries - 1))
+    .catch(e => getSLOC(repo, tries - 1))
 }
 
 function getParameterByName(name, url) {
