@@ -19,15 +19,16 @@ function insertSloc () {
   const $repoMeta = $('.repository-meta-content')
   if ($repoMeta.length !== 0) {
     $repoMeta.append('<span class="github-sloc"></span>')
-    getSloc(location.pathname, 2)
-      .then(lines => $('.github-sloc').text('SLOC: ' + lines))
+    getSloc(location.pathname, 3)
+      .then(lines => $repoMeta.append('<span class="github-sloc">SLOC: ' + lines + '</span>'))
       .catch(e => console.log(e))
+    return
   }
 
   // Discover repositories page
   if (location.pathname === '/dashboard/discover') {
+    var targetNode = document.getElementById('recommended-repositories-container')
     if (!discoverReposObserved) {
-      var targetNode = document.getElementById('recommended-repositories-container')
       var CLASS_NAME = 'mb-4 js-discover-repositories'
       var callback = function (mutations) {
         mutations.forEach(mutation => {
@@ -46,46 +47,45 @@ function insertSloc () {
   }
 
   // Mini repo list
+  var MINI_REPO_CLASS = '.mini-repo-list-item'
   if (!miniReposObserved) {
     var yourRepos = document.getElementById('your_repos')
-    var miniRepoCallback = function (mutations) {
-      mutations.forEach(mutation => {
-        mutation.addedNodes.forEach(node => {
-          if (node.className === 'mini-repo-list') {
-            $(node).find('.mini-repo-list-item').each(appendSloc)
-          }
+    if (yourRepos) {
+      var miniRepoCallback = function (mutations) {
+        mutations.forEach(mutation => {
+          mutation.addedNodes.forEach(node => {
+            if (node.className === 'mini-repo-list') {
+              $(node).find(MINI_REPO_CLASS).each(appendSloc)
+            }
+          })
         })
-      })
+      }
+      var miniRepoObserver = new MutationObserver(miniRepoCallback)
+      miniRepoObserver.observe(yourRepos, observeConf)
+      miniReposObserved = true
     }
-    var miniRepoObserver = new MutationObserver(miniRepoCallback)
-    miniRepoObserver.observe(yourRepos, observeConf)
-    miniReposObserved = true
   }
-  $('.mini-repo-list-item').each(appendSloc)
+  $(MINI_REPO_CLASS).each(appendSloc)
 
   // Explore, Collections page
   $('article h1 a').each(appendSloc)
   $('article h3 a').each(appendSloc)
 
-  // Search, Trending page
+  // Search, Trending page, etc
   $('.repo-list h3 a').each(appendSloc)
+  $('#user-repositories-list').find('h3 a').each(appendSloc)
 
-  // Your repositories page
-  if (/\/repositories$/.test(location.pathname)) {
-    // todo:
+  var tab = getParameterByName('tab')
+  if (/\/repositories$/.test(location.pathname) || tab && tab === 'stars') {
+    $('h3 a').each(appendSloc)
   }
 }
 
 function appendSloc () {
   var $el = $(this)
-  if ($el.hasClass('has-sloc')) {
-    return
-  }
-  getSloc($el.attr('href'), 2)
-    .then(lines => {
-      $el.addClass('has-sloc')
-        .append('<span class=\'text-gray\'>(' + lines + ' sloc)</span>')
-    })
+  if ($el.hasClass('has-sloc')) return
+  getSloc($el.attr('href'), 3)
+    .then(lines => $el.addClass('has-sloc').append('<span class=\'text-gray\'>(' + lines + ' sloc)</span>'))
     .catch(e => console.log(e))
 }
 
@@ -110,6 +110,16 @@ function getSloc (repo, tries) {
     .then(x => x.json())
     .then(x => x.reduce((total, changes) => total + changes[1] + changes[2], 0))
     .catch(err => getSloc(repo, tries - 1))
+}
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 
