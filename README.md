@@ -18,9 +18,9 @@ Then go to options page set your personal access token there.
 
 # Snapshots
 
-![Snapshots](images/snapshots/snapshot2.png)
-![Snapshots](images/snapshots/snapshot3.png)
-![Snapshots](images/snapshots/snapshot4.png)
-![Snapshots](images/snapshots/snapshot5.png)
+![Snapshots](img/snapshot/snapshot2.png)
+![Snapshots](img/snapshot/snapshot3.png)
+![Snapshots](img/snapshot/snapshot4.png)
+![Snapshots](img/snapshot/snapshot5.png)
 
 

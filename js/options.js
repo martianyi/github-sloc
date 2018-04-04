@@ -1,5 +1,5 @@
-chrome.storage.sync.get('github_sloc_token', function (result) {
-  var github_sloc_token = ''
+chrome.storage.sync.get('github_sloc_token',  (result) => {
+  let github_sloc_token = ''
   if (result && result.github_sloc_token != null) github_sloc_token = result.github_sloc_token
   document.getElementById('github_sloc_token').value = github_sloc_token
   document.getElementById('save').onclick = function () {
