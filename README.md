@@ -16,5 +16,8 @@ Install from [Chrome Web Store](https://chrome.google.com/webstore/detail/github
 Or clone this repo, go to chrome://extensions/ check developer mode, click load unpacked extension to load this extension. 
 Then go to options page set your personal access token there.
 
+# Snapshot
+![Snapshot](snapshot.png)
+
 
 
