@@ -6,7 +6,7 @@ let miniReposObserved = false
 let topicReposObserved = false
 const observeConf = {childList: true, subtree: true}
 
-chrome.storage.sync.get('github_sloc_token',  (result) => {
+chrome.storage.sync.get('github_sloc_token', (result) => {
   if (result && result.github_sloc_token != null) github_sloc_token = result.github_sloc_token
   $(document).on('pjax:complete', init)
   init()
@@ -15,12 +15,25 @@ chrome.storage.sync.get('github_sloc_token',  (result) => {
 function init () {
 
   // Project detail page
-  let $repoMeta = $('.repository-meta-content')
-  if ($repoMeta.length !== 0) {
-    $repoMeta.append('<span class="github-sloc"></span>')
-    getSLOC(location.pathname, 3)
-      .then(lines => $repoMeta.append('<span class="github-sloc">' + lines + ' sloc</span>'))
-      .catch(e => console.log(e))
+  let LI_TAG_ID = 'github-sloc'
+  let $repoSummary = $('.numbers-summary')
+  let liElm = document.getElementById(LI_TAG_ID)
+  if ($repoSummary.length !== 0 && !liElm) {
+    let pathname = location.pathname.substring(1)
+    let pathArr = pathname.split('/')
+    let repoURI = '/' + pathArr[0] + '/' + pathArr[1]
+    getSLOC(repoURI, 3)
+      .then(lines => {
+        $repoSummary.append(
+          '<li id="'+ LI_TAG_ID + '">' +
+          '<svg class="octicon octicon-code" viewBox="0 0 14 16" version="1.1" width="14" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M9.5 3L8 4.5 11.5 8 8 11.5 9.5 13 14 8 9.5 3zm-5 0L0 8l4.5 5L6 11.5 2.5 8 6 4.5 4.5 3z"></path></svg>' +
+          '<span class="num text-emphasized"> ' +
+          intCommas(lines) +
+          '</span>' +
+          ' sloc</li>'
+        )
+      })
+      .catch(e => console.error(e))
     return
   }
 
@@ -107,8 +120,8 @@ function insertSLOC () {
   const $el = $(this)
   if ($el.hasClass('has-sloc')) return
   getSLOC($el.attr('href'), 3)
-    .then(lines => $el.addClass('has-sloc').append('<span class=\'text-gray\'>(' + lines + ' sloc)</span>'))
-    .catch(e => console.log(e))
+    .then(lines => $el.addClass('has-sloc').append('<span class=\'text-gray\'>(' + intAbbr(lines) + ' sloc)</span>'))
+    .catch(e => console.error(e))
 }
 
 function getSLOC (repo, tries) {
@@ -134,12 +147,26 @@ function getSLOC (repo, tries) {
     .catch(e => getSLOC(repo, tries - 1))
 }
 
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
-  let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
+function getParameterByName (name, url) {
+  if (!url) url = window.location.href
+  name = name.replace(/[\[\]]/g, '\\$&')
+  let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+    results = regex.exec(url)
+  if (!results) return null
+  if (!results[2]) return ''
+  return decodeURIComponent(results[2].replace(/\+/g, ' '))
+}
+
+function intAbbr (x) {
+  const SI_SUFFIXES = ['', 'k', 'M', 'G', 'T', 'P', 'E']
+  const tier = Math.log10(x) / 3 | 0
+  if (tier === 0) return x
+  const suffix = SI_SUFFIXES[tier]
+  const scale = Math.pow(10, tier * 3)
+  const scaled = x / scale
+  return scaled.toFixed(1) + suffix
+}
+
+function intCommas (x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
