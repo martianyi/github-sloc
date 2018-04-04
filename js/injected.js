@@ -5,6 +5,7 @@ let discoverReposObserved = false
 let miniReposObserved = false
 let topicReposObserved = false
 const observeConf = {childList: true, subtree: true}
+const SI_SUFFIXES = ['', 'k', 'M', 'G', 'T', 'P', 'E']
 
 chrome.storage.sync.get('github_sloc_token', (result) => {
   if (result && result.github_sloc_token != null) github_sloc_token = result.github_sloc_token
@@ -15,19 +16,18 @@ chrome.storage.sync.get('github_sloc_token', (result) => {
 function init () {
 
   // Project detail page
-  let LI_TAG_ID = 'github-sloc'
+  let SLOC_ID = 'github-sloc'
   let $repoSummary = $('.numbers-summary')
-  let liElm = document.getElementById(LI_TAG_ID)
-  if ($repoSummary.length !== 0 && !liElm) {
-    let pathname = location.pathname.substring(1)
-    let pathArr = pathname.split('/')
+  let slocElm = document.getElementById(SLOC_ID)
+  if ($repoSummary.length !== 0 && !slocElm) {
+    let pathArr = location.pathname.substring(1).split('/')
     let repoURI = '/' + pathArr[0] + '/' + pathArr[1]
-    getSLOC(repoURI, 3)
+    getSLOC(repoURI, 2)
       .then(lines => {
         $repoSummary.append(
-          '<li id="'+ LI_TAG_ID + '">' +
+          '<li id="'+ SLOC_ID + '">' +
           '<span class="nolink">' +
-          '<svg class="octicon octicon-code" viewBox="0 0 14 16" version="1.1" width="14" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M9.5 3L8 4.5 11.5 8 8 11.5 9.5 13 14 8 9.5 3zm-5 0L0 8l4.5 5L6 11.5 2.5 8 6 4.5 4.5 3z"></path></svg>' +
+          '<svg class="octicon octicon-file-code" width="16" height="16" viewBox="0 0 12 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8.5 1H1c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V4.5L8.5 1zM11 14H1V2h7l3 3v9zM5 6.98L3.5 8.5 5 10l-.5 1L2 8.5 4.5 6l.5.98zM7.5 6L10 8.5 7.5 11l-.5-.98L8.5 8.5 7 7l.5-1z"></path></svg>' +
           '<span class="num text-emphasized"> ' +
           intCommas(lines) +
           '</span>' +
@@ -122,7 +122,7 @@ function init () {
 function insertSLOC () {
   const $el = $(this)
   if ($el.hasClass('has-sloc')) return
-  getSLOC($el.attr('href'), 3)
+  getSLOC($el.attr('href'), 2)
     .then(lines => $el.addClass('has-sloc').append('<span class=\'text-gray\'>(' + intAbbr(lines) + ' sloc)</span>'))
     .catch(e => console.error(e))
 }
@@ -136,10 +136,11 @@ function getSLOC (repo, tries) {
     return Promise.reject(new Error('GitHub SLOC: Failed to get SLOC of ' + repo))
   }
   let url = 'https://api.github.com/repos' + repo + '/stats/code_frequency'
+  let headers = {}
   if (github_sloc_token != null) {
-    url += '?access_token=' + github_sloc_token
+    headers['Authorization'] = 'token ' + github_sloc_token
   }
-  return fetch(url)
+  return fetch(url, {headers: headers})
     .then(x => x.json())
     .then(x => {
       return x.reduce((total, changes) => {
@@ -161,7 +162,6 @@ function getParameterByName (name, url) {
 }
 
 function intAbbr (x) {
-  const SI_SUFFIXES = ['', 'k', 'M', 'G', 'T', 'P', 'E']
   const tier = Math.log10(x) / 3 | 0
   if (tier === 0) return x
   const suffix = SI_SUFFIXES[tier]
