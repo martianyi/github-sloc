@@ -17,7 +17,13 @@ Or clone this repo, go to chrome://extensions/ check developer mode, click load 
 Then go to options page set your personal access token there.
 
 # Snapshot
-![Snapshot](snapshot.png)
+![Snapshot](snapshot/1.png)
+![Snapshot](snapshot/2.png)
+![Snapshot](snapshot/3.png)
+![Snapshot](snapshot/4.png)
+![Snapshot](snapshot/5.png)
+![Snapshot](snapshot/6.png)
+![Snapshot](snapshot/7.png)
 
 
 
