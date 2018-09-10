@@ -50,7 +50,7 @@ function init () {
   }
 
   // Discover repos page
-  if (location.pathname === '/dashboard/discover') {
+  if (location.pathname === '/discover') {
     const targetNode = document.getElementById('recommended-repositories-container')
     if (!discoverReposObserved) {
       const CLASS_NAME = 'mb-4 js-discover-repositories'
@@ -69,33 +69,6 @@ function init () {
     }
     $(targetNode).find('h3 a').each(insertSLOC)
   }
-
-  // Mini repo list
-  const MINI_REPO_CLASS = '.mini-repo-list-item'
-  if (!miniReposObserved) {
-    const yourRepos = document.getElementById('your_repos')
-    const orgYourRepos = document.getElementById('org_your_repos')
-    if (yourRepos || orgYourRepos) {
-      const miniRepoCallback = function (mutations) {
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
-            if (node.className === 'mini-repo-list') {
-              $(node).find(MINI_REPO_CLASS).each(insertSLOC)
-            }
-          })
-        })
-      }
-      const miniRepoObserver = new MutationObserver(miniRepoCallback)
-      if (yourRepos) {
-        miniRepoObserver.observe(yourRepos, observeConf)
-      }
-      if (orgYourRepos) {
-        miniRepoObserver.observe(orgYourRepos, observeConf)
-      }
-      miniReposObserved = true
-    }
-  }
-  $(MINI_REPO_CLASS).each(insertSLOC)
 
   // Explore, Collections, Topics page
   $('article h1 a').each(insertSLOC)
