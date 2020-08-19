@@ -1,9 +1,7 @@
 'use strict'
 
 const SI_SUFFIXES = ['', 'k', 'M', 'G', 'T', 'P', 'E']
-const GH_RESERVED_USER_NAMES = [
-  'orgs'
-]
+const GH_RESERVED_USER_NAMES = ['orgs']
 const DEFAULT_RETRY_TIMES = 3
 const DEFAULT_RETRY_DELAY = 500
 const SHOULD_RETRY_STATUS = [0, 202]
@@ -12,19 +10,21 @@ let github_sloc_token
 let discoverReposObserved = false
 let miniReposObserved = false
 let topicReposObserved = false
-const observeConf = {childList: true, subtree: true}
+const observeConf = { childList: true, subtree: true }
 
 chrome.storage.sync.get('github_sloc_token', (result) => {
-  if (result && result.github_sloc_token != null) github_sloc_token = result.github_sloc_token
+  if (result && result.github_sloc_token != null)
+    github_sloc_token = result.github_sloc_token
   $(document).on('pjax:complete', init)
   init()
 })
 
-function init () {
-
+function init() {
   // Project detail page
   const SLOC_ID = 'github-sloc'
-  const $repoSummary = $('.numbers-summary')
+  const $repoSummary = $(
+    '.flex-self-center.ml-3.flex-self-stretch.d-none.d-lg-flex.flex-items-center.lh-condensed-ultra'
+  )
   const slocElm = document.getElementById(SLOC_ID)
   if ($repoSummary.length !== 0 && !slocElm) {
     const match = location.pathname.match(/([^\/]+)\/([^\/]+)?/)
@@ -32,31 +32,33 @@ function init () {
     let reponame = match[2]
     let repoURI = `${username}/${reponame}`
     getSLOC(repoURI, DEFAULT_RETRY_TIMES)
-      .then(lines => {
+      .then((lines) => {
         $repoSummary.append(
-          '<li id="' + SLOC_ID + '">' +
-          '<span class="nolink">' +
-          '<svg class="octicon octicon-file-code" width="16" height="16" viewBox="0 0 12 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8.5 1H1c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V4.5L8.5 1zM11 14H1V2h7l3 3v9zM5 6.98L3.5 8.5 5 10l-.5 1L2 8.5 4.5 6l.5.98zM7.5 6L10 8.5 7.5 11l-.5-.98L8.5 8.5 7 7l.5-1z"></path></svg>' +
-          '<span class="num text-emphasized"> ' +
-          intCommas(lines) +
-          '</span>' +
-          ' sloc' +
-          '</span>' +
-          '</li>'
+          '<a id="' +
+            SLOC_ID +
+            '" class="ml-3 link-gray-dark no-underline" href="javascript:;">' +
+            '<svg text="gray" class="octicon octicon-file-code" width="16" height="16" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M8.5 1H1c-.55 0-1 .45-1 1v12c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V4.5L8.5 1zM11 14H1V2h7l3 3v9zM5 6.98L3.5 8.5 5 10l-.5 1L2 8.5 4.5 6l.5.98zM7.5 6L10 8.5 7.5 11l-.5-.98L8.5 8.5 7 7l.5-1z"></path></svg>' +
+            '<strong> ' +
+            intCommas(lines) +
+            '</strong>' +
+            '<span class="text-gray-light"> sloc</span>' +
+            '</a>'
         )
       })
-      .catch(e => console.error(e))
+      .catch((e) => console.error(e))
     return
   }
 
   // Discover repos page
   if (location.pathname === '/discover') {
-    const targetNode = document.getElementById('recommended-repositories-container')
+    const targetNode = document.getElementById(
+      'recommended-repositories-container'
+    )
     if (!discoverReposObserved) {
       const CLASS_NAME = 'mb-4 js-discover-repositories'
       const callback = function (mutations) {
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
             if (node.className === CLASS_NAME) {
               $(node).find('h3 a').each(insertSLOC)
             }
@@ -77,8 +79,8 @@ function init () {
     const topicNode = document.querySelector('.container-lg.topic.p-responsive')
     if (topicNode) {
       const topicRepoCallback = function (mutations) {
-        mutations.forEach(mutation => {
-          mutation.addedNodes.forEach(node => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
             if (/article/i.test(node.tagName)) {
               $(node).find('h3 a').each(insertSLOC)
             }
@@ -96,12 +98,15 @@ function init () {
 
   // etc
   const tab = getParameterByName('tab')
-  if (/\/repositories$/.test(location.pathname) || ['stars', 'repositories'].includes(tab)) {
+  if (
+    /\/repositories$/.test(location.pathname) ||
+    ['stars', 'repositories'].includes(tab)
+  ) {
     $('h3 a').each(insertSLOC)
   }
 }
 
-function insertSLOC () {
+function insertSLOC() {
   const $this = $(this)
   if ($this.hasClass('has-sloc')) {
     return
@@ -114,53 +119,56 @@ function insertSLOC () {
   }
   let repoURI = `${username}/${reponame}`
   getSLOC(repoURI, DEFAULT_RETRY_TIMES)
-    .then(lines => {
-      $this.addClass('has-sloc').append('<span class=\'text-gray\'>(' + intAbbr(lines) + ' sloc)</span>')
+    .then((lines) => {
+      $this
+        .addClass('has-sloc')
+        .append("<span class='text-gray'>(" + intAbbr(lines) + ' sloc)</span>')
     })
-    .catch(e => console.error(e))
+    .catch((e) => console.error(e))
 }
 
-function getSLOC (repo, tries) {
+function getSLOC(repo, tries) {
   if (!repo) {
     return Promise.reject(new Error('GitHub SLOC: no repo provided'))
   }
   if (tries === 0) {
-    return Promise.reject(new Error('GitHub SLOC: failed to get SLOC for ' + repo))
+    return Promise.reject(
+      new Error('GitHub SLOC: failed to get SLOC for ' + repo)
+    )
   }
   let url = `https://api.github.com/repos/${repo}/stats/code_frequency`
   let headers = {}
   if (github_sloc_token != null) {
     headers['Authorization'] = 'token ' + github_sloc_token
   }
-  return fetch(url, {headers: headers})
-    .then(resp => {
-      if (SHOULD_RETRY_STATUS.includes(resp.status)) {
-        return delay(DEFAULT_RETRY_DELAY).then(() => {
-          return getSLOC(repo, tries - 1)
-        })
-      } else if (resp.status === 200) {
-        return resp.json().then((data) => {
-          return data.reduce((total, changes) => {
-            let n = total + changes[1] + changes[2]
-            return n < 0 ? 0 : n
-          }, 0)
-        })
-      } else if (resp.status === 403) {
-        if (parseInt(resp.headers.get("X-RateLimit-Remaining")) === 0) {
-          if (github_sloc_token == null) {
-            // notify user to set their token
-            window.open(chrome.extension.getURL("options.html"), '_blank')
-          }
-          throw new Error('GitHub SLOC: api rate limit exceed')
+  return fetch(url, { headers: headers }).then((resp) => {
+    if (SHOULD_RETRY_STATUS.includes(resp.status)) {
+      return delay(DEFAULT_RETRY_DELAY).then(() => {
+        return getSLOC(repo, tries - 1)
+      })
+    } else if (resp.status === 200) {
+      return resp.json().then((data) => {
+        return data.reduce((total, changes) => {
+          let n = total + changes[1] + changes[2]
+          return n < 0 ? 0 : n
+        }, 0)
+      })
+    } else if (resp.status === 403) {
+      if (parseInt(resp.headers.get('X-RateLimit-Remaining')) === 0) {
+        if (github_sloc_token == null) {
+          // notify user to set their token
+          window.open(chrome.extension.getURL('options.html'), '_blank')
         }
-        throw new Error('GitHub SLOC: 403 forbidden')
-      } else {
-        throw new Error('GitHub SLOC: api return a bad status: ' + resp.status)
+        throw new Error('GitHub SLOC: api rate limit exceed')
       }
-    })
+      throw new Error('GitHub SLOC: 403 forbidden')
+    } else {
+      throw new Error('GitHub SLOC: api return a bad status: ' + resp.status)
+    }
+  })
 }
 
-function getParameterByName (name, url) {
+function getParameterByName(name, url) {
   if (!url) url = window.location.href
   name = name.replace(/[\[\]]/g, '\\$&')
   let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -170,8 +178,8 @@ function getParameterByName (name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, ' '))
 }
 
-function intAbbr (x) {
-  const tier = Math.log10(x) / 3 | 0
+function intAbbr(x) {
+  const tier = (Math.log10(x) / 3) | 0
   if (tier === 0) return x
   const suffix = SI_SUFFIXES[tier]
   const scale = Math.pow(10, tier * 3)
@@ -179,11 +187,11 @@ function intAbbr (x) {
   return scaled.toFixed(1) + suffix
 }
 
-function intCommas (x) {
+function intCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }
 
-function delay (t, v) {
+function delay(t, v) {
   return new Promise(function (resolve) {
     setTimeout(resolve.bind(null, v), t)
   })
